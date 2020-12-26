@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <title>WEB3 - Welcome</title>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <meta name="google-signin-client_id" content="907671459530-flgl2lg4ofhvr1d5s1eb6oi7fn1cbe1b.apps.googleusercontent.com">
+
+  <script>
+		function checkLoginStatus() {
+			var loginBtn = document.querySelector('#loginBtn');
+			var nameTxt = document.querySelector('#name');
+			var logoutBtn = document.querySelector('#logoutBtn');
+			
+			if(gauth.isSignedIn.get()){
+				console.log('logined');
+				logoutBtn.style.display = "block";
+				loginBtn.style.display = "none";
+				var profile = gauth.currentUser.get().getBasicProfile();
+				var d = new Date();
+				var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+				var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+				nameTxt.innerHTML = 'Welcome <strong>' + profile.getName()+'</strong> ' +days[d.getDay()]+ ' '+ d.getDate() +'일'+ months[d.getMonth()]+'달'+ d.getFullYear() +'년'+ d.getHours()+'시'+d.getMinutes()+'분'+d.getSeconds()+'초에 로그인';
+				
+			} else {
+				console.log('logouted');
+				logoutBtn.style.display = "none";
+				loginBtn.style.display = "block";
+				loginBtn.value="Login";
+				nameTxt.innerHTML = '';
+			}
+		}
+    function init() {
+			console.log('init');
+      gapi.load('auth2', function() {
+        console.log('auth2');
+        window.gauth = gapi.auth2.init( {
+          client_id: '907671459530-flgl2lg4ofhvr1d5s1eb6oi7fn1cbe1b.apps.googleusercontent.com'
+        });
+        gauth.then( function() {
+          console.log('googleAuth success');
+					checkLoginStatus();
+        }, function() {
+          console.log('google Auth fail');
+        });
+        
+      });
+    }
+  </script>
+	<script>
+	  function logout(){
+			var status = gauth.signOut().then( function(){
+      	console.log('gauth.signOut()');
+				checkLoginStatus()
+			} );
+		}
+		function login(){
+			var status = gauth.signIn().then( function(){
+      	console.log('gauth.signIn()');
+				checkLoginStatus()
+			} );
+		}
+		
+	</script>
+</head>
+<body>
+	<span id="name"></span>
+ 	<input type="button" id="loginBtn" value="checking..." 
+  										  onclick="login()"><br>
+  <input type="button" id="logoutBtn" value="Logout" hidden onclick="logout()">
+	
+    <h1><a href="index.html">WEB3</a></h1>
+    <ol id="nav">
+    </ol>
+    <article>
+			
+    </article>
+
+  <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+</body>
+</html>

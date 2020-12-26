@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <title>WEB1 - Welcome</title>
+  <meta charset="utf-8">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="colors.js"></script>
+<!--  <script src="fetch/fetch.js"></script> -->
+  <meta name="google-signin-client_id" content="907671459530-7gldt5fp7f434isc8igq61l7fhnas3g6.apps.googleusercontent.com">
+  <script>
+    function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    }
+   </script>
+  <script>
+    function init() {
+      gapi.load('auth2', function() {
+        console.log('auth2');
+        window.gauth = gapi.auth2.init( {
+          client_id: '907671459530-7gldt5fp7f434isc8igq61l7fhnas3g6.apps.googleusercontent.com'
+        });
+        gauth.then( function() {
+          console.log('googleAuth success');
+          var loginBtn = document.querySelector('#loginBtn');
+          if(gauth.isSignedIn.get()){
+            console.log('logined');
+            loginBtn.value = 'Logout';
+          } else {
+            console.log('logouted');
+            loginBtn.value = 'Login';
+          }
+        }, function() {
+          console.log('google Auth fail');
+        });
+        
+      });
+    }
+  </script>
+</head>
+<body>
+  <input type="button" id="loginBtn" value="checking..." onclick=" if(this.value ==='Login') {
+    gauth.signIn().then( function() { 
+   												this.setValue('Logout');   
+    											console.log('gauth.signIn()')
+    											});                                                        
+	 } else { 
+     gauth.signOut().then( function() {  
+														this.setValue('Login');   
+															console.log('gauth.signOut()');
+													 });
+    };
+  ">
+    <h1><a href="#!welcome">WEB</a></h1>
+    <input id="night_day" type="button" value="밤" onclick="
+        nightDayHandler(this);  ">
+    <ol id="nav">
+    </ol>
+    <article>
+			
+    </article>
+    <script>
+      function fetchPage(name){
+        fetch(name).then(function(response){
+          response.text().then(function(text){
+            document.querySelector('article').innerHTML = text;
+          })
+        });
+      }
+      if(location.hash){
+        fetchPage(location.hash.substr(2));
+      } else {
+        fetchPage('welcome');
+      }
+      fetch('list').then(function(response){
+        response.text().then(function(text){
+          var items = text.split(',');
+          var i = 0;
+          var tags = '';
+          while(i<items.length){
+            var item = items[i];
+            item = item.trim();
+            var tag = '<li><a href="#!'+item+'" onclick="fetchPage(\''+item+'\')">'+item+'</a></li>';
+            tags = tags + tag;
+            i = i + 1;
+          }
+          document.querySelector('#nav').innerHTML = tags;
+        })
+      });
+    </script>
+  <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+</body>
+</html>
